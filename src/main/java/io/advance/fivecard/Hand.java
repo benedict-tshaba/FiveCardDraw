@@ -1,11 +1,13 @@
 package io.advance.fivecard;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Hand {
-  private ArrayList<Card> cards;
-  private int handSize;
+  private List<Card> cards;
+  private final int handSize;
 
   public Hand(int handSize) {
     cards = new ArrayList<>(handSize);
@@ -16,8 +18,23 @@ public class Hand {
     cards.sort((a, b) -> a.getRank().ordinal() - b.getRank().ordinal());
   }
 
+  public void clear() {
+    cards.clear();
+  }
+
   public void addCard(Card card) {
     cards.add(card);
+  }
+
+  public void setCards(List<Card> cards) {
+    if(cards.size() > handSize) {
+      throw new ArrayIndexOutOfBoundsException("Attempt to add cards to a hand that cannot hold that many cards");
+    }
+    this.cards = cards;
+  }
+
+  public List<Card> getCards() {
+    return cards;
   }
 
   public void removeCard(int index) {
@@ -52,11 +69,23 @@ public class Hand {
   }
 
   public boolean isStraight() {
-    for (int i = 1; i < handSize; i++) {
-      if (cards.get(i).getRank() != cards.get(i - 1).getRank()) {
+    Collections.sort(cards, Comparator.comparing(Card::getRank));
+
+    if ( cards.get(0).getRank() == Rank.ACE
+      && cards.get(1).getRank() == Rank.TWO
+      && cards.get(2).getRank() == Rank.THREE
+      && cards.get(3).getRank() == Rank.FOUR
+      && cards.get(4).getRank() == Rank.FIVE
+    ) {
+      return true;
+    }
+
+    for (int i = 1; i < cards.size(); i++) {
+      if (cards.get(i).getRank().ordinal() != cards.get(i - 1).getRank().ordinal() + 1) {
         return false;
       }
     }
+
     return true;
   }
 
