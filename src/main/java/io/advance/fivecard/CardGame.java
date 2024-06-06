@@ -1,11 +1,13 @@
 package io.advance.fivecard;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class CardGame {
   private Deck deck;
   private Hand hand;
   private IShuffler shuffler;
+  private static final Random RANDOM = new Random();
 
   public CardGame(String[] args, IShuffler shuffler) {
     int handSize = 5;
@@ -30,12 +32,25 @@ public class CardGame {
     shuffle(deck);
   }
 
+  private void swap(List<Card> cards, int i, int j) {
+    Card temp = cards.get(i);
+    cards.set(i, cards.get(j));
+    cards.set(j, temp);
+  }
+
+  private void simpleNaiveBayes(List<Card> cards) {
+    for(int i = cards.size() - 1; i > 0; i--) {
+      int j = RANDOM.nextInt(i + 1);
+      swap(cards, i, j);
+    }
+  }
+
   private void shuffle(Deck deck) {
     if(shuffler != null) {
       shuffler.shuffle(deck);
     }
     else {
-      Collections.shuffle(deck.getCards());
+      simpleNaiveBayes(deck.getCards());
     }
   }
 
@@ -54,6 +69,14 @@ public class CardGame {
 
   public Hand getHand() {
     return hand;
+  }
+
+  public void setDeck(Deck deck) {
+    this.deck = deck;
+  }
+
+  public Deck getDeck() {
+    return deck;
   }
 
   public String evaluateHand() {
